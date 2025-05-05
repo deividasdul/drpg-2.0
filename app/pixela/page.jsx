@@ -23,6 +23,7 @@ const BASE_API_URL = "http://localhost:3000/api/users";
 // TODO: FIELD VALIDATION
 // TODO: SNACKBAR FOR DELETING USER
 // TODO: SNACKBAR FOR UPDATING USER AND CLEARING FIELD
+// TODO: ENCRYPT TOKEN
 
 const Pixela = () => {
   const [user, setUser] = useState([]);
@@ -69,7 +70,7 @@ const Pixela = () => {
           username: input.username,
           token: input.token,
         };
-        const _ = await fetch(BASE_API_URL, {
+        const _ = await fetch("/api/users", {
           method: "POST",
           body: JSON.stringify(userData),
         });
@@ -106,7 +107,7 @@ const Pixela = () => {
       }
 
       try {
-        const _ = await fetch(BASE_API_URL, {
+        const _ = await fetch("/api/users", {
           method: "DELETE",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -137,7 +138,7 @@ const Pixela = () => {
           token: token,
           username: user[0].username,
         };
-        const _ = await fetch(BASE_API_URL, {
+        const _ = await fetch("/api/users", {
           method: "PUT",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -155,7 +156,7 @@ const Pixela = () => {
 
   const fetchUser = async () => {
     try {
-      const response = await fetch(BASE_API_URL);
+      const response = await fetch("/api/users");
       const user = await response.json();
       setUser(user);
     } catch (error) {
