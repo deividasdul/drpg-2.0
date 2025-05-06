@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AppBar,
   Divider,
@@ -11,12 +13,34 @@ import {
   ListItemText,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React from "react";
+import React, { useContext } from "react";
 
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import PersonIcon from "@mui/icons-material/Person";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import { UsersContext } from "../context/UsersContext";
+
+const pixelaItems = [
+  {
+    label: "User",
+    href: "pixela-user",
+    icon: <PersonIcon />,
+  },
+  {
+    label: "User Profile",
+    href: "pixela-user-profile",
+    icon: <ManageAccountsIcon />,
+  },
+  {
+    label: "Graph",
+    href: "pixela-graph",
+    icon: <AutoGraphIcon />,
+  },
+];
 
 const Navigation = ({ children }) => {
+  const { user } = useContext(UsersContext);
+
   const drawerWidth = 240;
 
   return (
@@ -25,11 +49,7 @@ const Navigation = ({ children }) => {
         position="fixed"
         sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
       >
-        <Toolbar>
-          {/* <Typography variant="h6" noWrap component="div">
-            Permanent drawer
-          </Typography> */}
-        </Toolbar>
+        <Toolbar></Toolbar>
       </AppBar>
       <Drawer
         sx={{
@@ -46,13 +66,17 @@ const Navigation = ({ children }) => {
         <Toolbar />
         <Divider />
         <List>
-          {["Pixela", "None", "None", "None"].map((text, index) => (
+          <Typography variant="h6" gutterBottom textAlign={"center"}>
+            Pixela
+          </Typography>
+          {pixelaItems.map((item, index) => (
             <ListItem key={index} disablePadding>
-              <ListItemButton href={text.toLowerCase()}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
+              <ListItemButton
+                disabled={index != 0 && !user[0]}
+                href={item.href}
+              >
+                <ListItemIcon siz>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -62,9 +86,7 @@ const Navigation = ({ children }) => {
           {["None", "None", "None"].map((text, index) => (
             <ListItem key={index} disablePadding>
               <ListItemButton href={text.toLowerCase()}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
+                <ListItemIcon>temp</ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>

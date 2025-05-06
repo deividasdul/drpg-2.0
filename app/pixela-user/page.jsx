@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Navigation from "../components/Navigation";
 import {
   Button,
@@ -13,29 +13,74 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useSnackbar } from "notistack";
+import { UsersContext } from "../context/UsersContext";
+import Snack from "../components/Snack";
+import DialogAlert from "../components/DialogAlert";
 
-const BASE_PIXELA_URL = "https://pixe.la/";
-const BASE_API_URL = "http://localhost:3000/api/users";
-
-// TODO: SNACKBAR AFTER CREATING USER
+// TODO: FIX SNACKBARS FOR ERRORS
 // TODO: DELETION ONLY 25%
 // TODO: FIELD VALIDATION
-// TODO: SNACKBAR FOR DELETING USER
-// TODO: SNACKBAR FOR UPDATING USER AND CLEARING FIELD
 // TODO: ENCRYPT TOKEN
 
 const Pixela = () => {
-  const [user, setUser] = useState([]);
-  const [token, setToken] = useState("");
-  const { enqueueSnackbar } = useSnackbar();
+  const { user, createUser, updateUser, deleteUser } = useContext(UsersContext);
 
+  const [token, setToken] = useState("");
+  const [snackMessage, setSnackMessage] = useState("");
   const [input, setInput] = useState({
     token: "",
     username: "",
     agreeTermsOfService: "no",
     notMinor: "no",
   });
+
+  const [openSnack, setSnackOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const [dialogOptions, setDialogOptions] = useState({
+    title: "",
+    content: "",
+    action: null,
+  });
+
+  const handleSnackClick = () => {
+    setSnackOpen(true);
+  };
+
+  const handleSnackClosse = () => {
+    setSnackOpen(false);
+  };
+
+  const handleDialogClick = () => {
+    setOpenDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
+
+  const create = () => {
+    createUser(input);
+
+    setInput({
+      token: "",
+      username: "",
+      agreeTermsOfService: "",
+      notMinor: "",
+    });
+
+    setSnackMessage("User successfully created");
+    handleSnackClick();
+  };
+
+  const update = () => {
+    updateUser(token);
+
+    setToken("");
+
+    setSnackMessage("User successfully updated");
+    handleSnackClick();
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,124 +95,6 @@ const Pixela = () => {
     setToken(e.target.value);
   };
 
-  const handleClickVariant = (message, variant) => () => {
-    enqueueSnackbar({ message }, { variant });
-  };
-
-  const createUser = async () => {
-    try {
-      const _ = await fetch(`${BASE_PIXELA_URL}v1/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: JSON.stringify(input),
-      });
-
-      try {
-        const userData = {
-          link: `https://pixe.la/@${input.username}`,
-          username: input.username,
-          token: input.token,
-        };
-        const _ = await fetch("/api/users", {
-          method: "POST",
-          body: JSON.stringify(userData),
-        });
-        fetchUser();
-        handleClickVariant("Pixela user successfully created", "success");
-      } catch (error) {
-        console.error(error);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-
-    setInput({
-      token: "",
-      username: "",
-      agreeTermsOfService: "",
-      notMinor: "",
-    });
-  };
-
-  const deleteUser = async () => {
-    try {
-      for (let i = 0; i < 8; i++) {
-        const _ = await fetch(
-          `${BASE_PIXELA_URL}v1/users/${user[0].username}`,
-          {
-            method: "DELETE",
-            headers: {
-              "X-USER-TOKEN": `${user[0]?.token}`,
-            },
-            body: JSON.stringify(user[0]?.username),
-          }
-        );
-      }
-
-      try {
-        const _ = await fetch("/api/users", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: JSON.stringify(user[0]?.username),
-        });
-        fetchUser();
-      } catch (error) {
-        console.error(error);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const updateUser = async () => {
-    try {
-      const _ = await fetch(`${BASE_PIXELA_URL}v1/users/${user[0]?.username}`, {
-        method: "PUT",
-        headers: {
-          "X-USER-TOKEN": user[0]?.token,
-        },
-        body: JSON.stringify({ newToken: token }),
-      });
-
-      try {
-        const data = {
-          token: token,
-          username: user[0].username,
-        };
-        const _ = await fetch("/api/users", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: JSON.stringify(data),
-        });
-        fetchUser();
-      } catch (error) {
-        console.error(error);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchUser = async () => {
-    try {
-      const response = await fetch("/api/users");
-      const user = await response.json();
-      setUser(user);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
   return (
     <Navigation>
       <Typography variant="h3" gutterBottom>
@@ -181,6 +108,7 @@ const Pixela = () => {
           onChange={handleChange}
           disabled={user[0]}
           helperText="The token shall consist of at least 8 characters"
+          required
         />
         <TextField
           label="Username"
@@ -188,6 +116,7 @@ const Pixela = () => {
           value={input.username}
           onChange={handleChange}
           disabled={user[0]}
+          required
         />
         <FormControl>
           <InputLabel>Agree Terms of Service</InputLabel>
@@ -224,12 +153,11 @@ const Pixela = () => {
           variant="contained"
           color="success"
           size="large"
-          onClick={createUser}
+          onClick={create}
         >
           Create
         </Button>
       </Stack>
-
       <Typography variant="h3" gutterBottom>
         Pixela user {user[0]?.username}
       </Typography>
@@ -246,12 +174,19 @@ const Pixela = () => {
           color="error"
           size="large"
           disabled={!user[0]}
-          onClick={deleteUser}
+          onClick={() => {
+            handleDialogClick();
+            setDialogOptions({
+              title: "Do you want to delete this user?",
+              content:
+                "By clicking accept, you confirm that your user will be permanently deleted from both our system and pixela",
+              action: deleteUser,
+            });
+          }}
         >
           Delete user
         </Button>
       </Stack>
-
       <Typography variant="h3" gutterBottom>
         Update user token
       </Typography>
@@ -268,11 +203,24 @@ const Pixela = () => {
           variant="contained"
           size="large"
           disabled={!user[0]}
-          onClick={updateUser}
+          onClick={update}
         >
           Update
         </Button>
       </Stack>
+      <Snack
+        open={openSnack}
+        handleClose={handleSnackClosse}
+        message={snackMessage}
+      />
+      <DialogAlert
+        open={openDialog}
+        handleClose={handleDialogClose}
+        title={dialogOptions.title}
+        content={dialogOptions.content}
+        action={dialogOptions.action}
+      />
+      ;
     </Navigation>
   );
 };
