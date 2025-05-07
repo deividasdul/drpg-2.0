@@ -19,6 +19,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import { UsersContext } from "../context/UsersContext";
+import ScatterPlotIcon from "@mui/icons-material/ScatterPlot";
 
 const pixelaItems = [
   {
@@ -35,6 +36,11 @@ const pixelaItems = [
     label: "Graph",
     href: "pixela-graph",
     icon: <AutoGraphIcon />,
+  },
+  {
+    label: "Pixel",
+    href: "pixela-pixel",
+    icon: <ScatterPlotIcon />,
   },
 ];
 

@@ -118,7 +118,6 @@ export const UsersProvider = ({ children }) => {
       const response = await fetch(`/api/users/profiles`);
       const profile = await response.json();
       setUserProfile(profile);
-      console.log(profile);
     } catch (error) {
       console.error(error);
     }

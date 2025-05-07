@@ -18,7 +18,7 @@ const UserProfile = () => {
     title: "",
     timezone: "",
     aboutURL: "",
-    contributeURLs: [],
+    // contributeURLs: "",
     pinnedGraphID: "",
   });
 
@@ -67,7 +67,7 @@ const UserProfile = () => {
         title: profile.title || "",
         timezone: profile.timezone || "",
         aboutURL: profile.about_url || "",
-        contributeURLs: profile.contribute_urls || [],
+        // contributeURLs: profile.contribute_urls || "",
         pinnedGraphID: profile.pinned_graph_id || "",
       });
     } else {
@@ -78,7 +78,7 @@ const UserProfile = () => {
         title: "",
         timezone: "",
         aboutURL: "",
-        contributeURLs: "",
+        // contributeURLs: "",
         pinnedGraphID: "",
       });
     }
@@ -119,6 +119,7 @@ const UserProfile = () => {
           value={input.title}
           onChange={handleChange}
           helperText="(3) Your title or role (supporters only)"
+          disabled
         />
         <TextField
           label="Timezone"
@@ -133,14 +134,16 @@ const UserProfile = () => {
           value={input.aboutURL}
           onChange={handleChange}
           helperText="(5) One external link to show on your profile"
+          disabled
         />
-        <TextField
+        {/* <TextField
           label="Contribute URLs"
           name="contributeURLs"
           value={input.contributeURLs}
           onChange={handleChange}
           helperText="(6) Links to your Pixela-related projects or articles"
-        />
+          disabled
+        /> */}
         <TextField
           label="Pinned Graph ID"
           name="pinnedGraphID"
