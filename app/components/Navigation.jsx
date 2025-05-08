@@ -20,6 +20,7 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import { UsersContext } from "../context/UsersContext";
 import ScatterPlotIcon from "@mui/icons-material/ScatterPlot";
+import ImageIcon from "@mui/icons-material/Image";
 
 const pixelaItems = [
   {
@@ -28,7 +29,7 @@ const pixelaItems = [
     icon: <PersonIcon />,
   },
   {
-    label: "User Profile",
+    label: "Profile",
     href: "pixela-user-profile",
     icon: <ManageAccountsIcon />,
   },
@@ -81,7 +82,7 @@ const Navigation = ({ children }) => {
                 disabled={index != 0 && !user[0]}
                 href={item.href}
               >
-                <ListItemIcon siz>{item.icon}</ListItemIcon>
+                <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.label} />
               </ListItemButton>
             </ListItem>
@@ -89,10 +90,15 @@ const Navigation = ({ children }) => {
         </List>
         <Divider />
         <List>
-          {["None", "None", "None"].map((text, index) => (
+          <Typography variant="h6" gutterBottom textAlign={"center"}>
+            Sheety
+          </Typography>
+          {["Temp"].map((text, index) => (
             <ListItem key={index} disablePadding>
               <ListItemButton href={text.toLowerCase()}>
-                <ListItemIcon>temp</ListItemIcon>
+                <ListItemIcon>
+                  <ImageIcon />
+                </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>

@@ -25,14 +25,40 @@ import { UsersContext } from "../context/UsersContext";
 
 const paginationModel = { page: 0, pageSize: 10 };
 
+const BASE_PIXELA_URL = "https://pixe.la";
+
 const page = () => {
   const [pixels, setPixels] = useState();
   const { user } = useContext(UsersContext);
   const [graphs, setGraphs] = useState();
   const [open, setOpen] = useState(false);
 
+  const [openEdit, setOpenEdit] = useState(false);
+
+  const [currentPixel, setCurrentPixel] = useState({
+    newQuantity: "",
+    newDescription: "",
+  });
+
+  const handleEditOpen = () => {
+    setOpenEdit(true);
+  };
+
+  const handleEditClose = () => {
+    setOpenEdit(false);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+
+    setCurrentPixel((prevInput) => ({
+      ...prevInput,
+      [name]: value,
+    }));
+  };
+
   const columns = [
-    { field: "id", headerName: "ID", width: 10 },
+    { field: "id", headerName: "ID" },
     { field: "graph_id", headerName: "Graph ID" },
     { field: "graph_name", headerName: "Name" },
     { field: "graph_unit", headerName: "Unit" },
@@ -42,26 +68,127 @@ const page = () => {
     {
       field: "actions",
       headerName: "Actions",
-      width: "fullWidth",
+      width: 150,
       renderCell: (params) => {
-        const test = () => {
-          console.log(params);
+        const deletePixel = async (id) => {
+          try {
+            for (let i = 0; i < 8; i++) {
+              await fetch(
+                `${BASE_PIXELA_URL}/v1/users/${user[0].username}/graphs/${params.row.graph_id}/${params.row.date}`,
+                {
+                  method: "DELETE",
+                  headers: {
+                    "X-USER-TOKEN": user[0].token,
+                  },
+                }
+              );
+            }
+
+            await fetch(`/api/pixels/${id}`, {
+              method: "DELETE",
+            });
+            fetchPixels();
+          } catch (error) {
+            console.error(error);
+          }
         };
+
+        const editPixel = async (id) => {
+          try {
+            for (let i = 0; i < 8; i++) {
+              await fetch(
+                `${BASE_PIXELA_URL}/v1/users/${user[0].username}/graphs/${params.row.graph_id}/${params.row.date}`,
+                {
+                  method: "PUT",
+                  headers: {
+                    "X-USER-TOKEN": user[0].token,
+                  },
+                  body: JSON.stringify({
+                    quantity: currentPixel.newQuantity,
+                    description: currentPixel.newDescription,
+                  }),
+                }
+              );
+            }
+
+            await fetch(`/api/pixels/${id}`, {
+              method: "PUT",
+              body: JSON.stringify(currentPixel),
+            });
+            fetchPixels();
+            handleEditClose();
+          } catch (error) {
+            console.error(error);
+          }
+        };
+
         return (
           <>
-            <IconButton>
+            <IconButton
+              onClick={() => {
+                setCurrentPixel({
+                  newQuantity: params.row.quantity,
+                  newDescription: params.row.description,
+                });
+                handleEditOpen();
+              }}
+            >
               <EditIcon color="primary" />
             </IconButton>
             <IconButton>
-              <DeleteIcon color="error" />
+              <DeleteIcon
+                color="error"
+                onClick={() => {
+                  deletePixel(params.id);
+                }}
+              />
             </IconButton>
             <IconButton
               target="_blank"
-              href={`https://pixe.la/v1/users/${user[0]?.username}/graphs/${params.row.graph_id}.html`}
-              onClick={test}
+              href={`${BASE_PIXELA_URL}/v1/users/${user[0]?.username}/graphs/${params.row.graph_id}.html`}
             >
               <VisibilityIcon color="info" />
             </IconButton>
+
+            <Dialog open={openEdit} onClose={handleEditClose}>
+              <DialogTitle>Edit pixel</DialogTitle>
+              <DialogContent>
+                <Stack gap={2}>
+                  <TextField
+                    name="newQuantity"
+                    value={currentPixel.newQuantity}
+                    onChange={handleEditChange}
+                    variant="filled"
+                    label="Quantity"
+                  />
+                  <TextField
+                    name="newDescription"
+                    value={currentPixel.newDescription}
+                    onChange={handleEditChange}
+                    variant="filled"
+                    label="Description"
+                  />
+                </Stack>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={handleEditClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  color="success"
+                  variant="contained"
+                  onClick={() => {
+                    editPixel(params.id);
+                  }}
+                >
+                  Confirm
+                </Button>
+              </DialogActions>
+            </Dialog>
           </>
         );
       },
@@ -87,7 +214,7 @@ const page = () => {
 
       for (let i = 0; i < 8; i++) {
         await fetch(
-          `https://pixe.la/v1/users/${user[0].username}/graphs/${graphName}`,
+          `${BASE_PIXELA_URL}/v1/users/${user[0].username}/graphs/${graphName}`,
           {
             method: "POST",
             headers: {
