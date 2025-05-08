@@ -12,7 +12,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Divider,
   FormControl,
@@ -43,6 +42,7 @@ const Graph = () => {
     graph_color: "",
   });
 
+  const [currentGraphID, setCurrentGraphID] = useState(0);
   const [currentGraph, setCurrentGraph] = useState({
     graph_name: "",
     graph_unit: "",
@@ -53,6 +53,15 @@ const Graph = () => {
     const { name, value } = e.target;
 
     setInput((prevInput) => ({
+      ...prevInput,
+      [name]: value,
+    }));
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+
+    setCurrentGraph((prevInput) => ({
       ...prevInput,
       [name]: value,
     }));
@@ -114,8 +123,27 @@ const Graph = () => {
     try {
       await fetch(`/api/graphs/${id}`, {
         method: "PUT",
-        body: JSON.stringify({}),
+        body: JSON.stringify(currentGraph),
       });
+
+      const data = {
+        name: currentGraph.graph_name,
+        unit: currentGraph.graph_unit,
+        color: currentGraph.graph_color,
+      };
+      for (let i = 0; i < 8; i++) {
+        await fetch(
+          `${BASE_PIXELA_URL}/v1/users/${user[0].username}/graphs/${id}`,
+          {
+            method: "PUT",
+            headers: {
+              "X-USER-TOKEN": user[0].token,
+            },
+            body: JSON.stringify(data),
+          }
+        );
+      }
+
       fetchGraphs();
     } catch (error) {
       console.error(error);
@@ -187,6 +215,7 @@ const Graph = () => {
                           graph_unit: graph.graph_unit,
                           graph_color: graph.graph_color,
                         });
+                        setCurrentGraphID(graph.graph_id);
                         handleEditOpen();
                       }}
                     >
@@ -297,18 +326,18 @@ const Graph = () => {
             <TextField
               variant="filled"
               placeholder="Name"
-              label=""
+              label="Name"
               name="graph_name"
-              onChange={handleChange}
+              onChange={handleEditChange}
               value={currentGraph.graph_name}
             />
             <TextField
               variant="filled"
               placeholder="Unit"
-              label=""
+              label="Unit"
               name="graph_unit"
               helperText="commit, kilogram, calory..."
-              onChange={handleChange}
+              onChange={handleEditChange}
               value={currentGraph.graph_unit}
             />
             <FormControl>
@@ -316,7 +345,7 @@ const Graph = () => {
               <Select
                 label="Color"
                 name="graph_color"
-                onChange={handleChange}
+                onChange={handleEditChange}
                 value={currentGraph.graph_color}
               >
                 <MenuItem value="shibafu">Green</MenuItem>
@@ -337,7 +366,7 @@ const Graph = () => {
             color="success"
             variant="contained"
             onClick={() => {
-              // updateGraph(graph.graph_id);
+              updateGraph(currentGraphID);
             }}
           >
             Confirm
