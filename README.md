@@ -1,7 +1,3 @@
-Absolutely — here's a more natural, human-written `README.md` tailored for your **DRPG** project, without flashy emojis or boilerplate "logo/license" sections:
-
----
-
 # DRPG
 
 **DRPG** is a habit tracking web app built with Next.js that takes inspiration from GitHub’s contribution graph. It uses the [Pixela API](https://pixe.la) under the hood to let users create graphs, track their habits as “pixels,” and manage everything with full CRUD functionality — from graphs to individual pixel entries.
