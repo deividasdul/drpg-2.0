@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DRPG
 
-## Getting Started
+**DRPG** is a habit tracking web app built with Next.js that takes inspiration from GitHub’s contribution graph. It uses the [Pixela API](https://pixe.la) under the hood to let users create graphs, track their habits as “pixels,” and manage everything with full CRUD functionality — from graphs to individual pixel entries.
 
-First, run the development server:
+The idea is to gamify the typical to-do list or habit tracker. Instead of checking boxes, you “contribute” pixels to your habit graph, making it feel more like a game or a visual streak tracker. Think of it like GitHub contributions, but for anything — reading, working out, coding, etc.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What it does
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+* Lets users create an account and manage their profile
+* Allows full CRUD (Create, Read, Update, Delete) operations for:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+  * **Graphs** – e.g. a graph for "Reading" or "Workout"
+  * **Pixels** – each one represents progress on a specific day
+* Uses Pixela as the backend for storing and visualizing data
+* Designed to make habit-tracking visual and motivating
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## What's planned
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This is still a work in progress. Some upcoming features include:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* Integration with **Sheety API** so you can export or display data in spreadsheets
+* Weekly email summaries with analytics and streaks
+* Possibly more gamified elements like achievements, levels, etc.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Getting started
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone the repo:
+
+   ```bash
+   git clone https://github.com/your-username/drpg.git
+   cd drpg
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables:
+
+   Create a `.env.local` file and add the following:
+
+   ```
+   NEXT_PUBLIC_PIXELA_USERNAME=your_pixela_username
+   NEXT_PUBLIC_PIXELA_TOKEN=your_pixela_token
+   ```
+
+   You can also set up placeholders for the upcoming features:
+
+   ```
+   EMAIL_SERVICE_API_KEY=your_email_api_key
+   SHEETY_API_URL=https://api.sheety.co/...
+   ```
+
+4. Run it locally:
+
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Why I built this
+
+Most habit trackers feel either too basic or too overwhelming. DRPG aims to strike a balance by using visual feedback (like GitHub's graph) to make daily progress feel more rewarding. It's also an excuse to build something fun with Next.js and experiment with external APIs like Pixela, Sheety, and email services.
