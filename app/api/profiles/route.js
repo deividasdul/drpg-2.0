@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import pool from "../../db";
+import pool from "../db";
 
 export async function GET(req, { params }) {
-  // const { id } = await params;
-
   try {
     const response = await pool.query(`SELECT * FROM profiles`);
     const profile = response.rows[0];

@@ -8,15 +8,15 @@ import {
 } from "@mui/material";
 import React from "react";
 
-const DialogAlert = ({ open, handleClose, title, content, action }) => {
+const AlertDialog = ({ isOpen, close, title, content, action }) => {
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={isOpen} onClose={close}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{content}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" onClick={handleClose}>
+        <Button variant="outlined" onClick={close}>
           Cancel
         </Button>
         <Button
@@ -24,7 +24,7 @@ const DialogAlert = ({ open, handleClose, title, content, action }) => {
           color="error"
           onClick={() => {
             action();
-            handleClose();
+            close();
           }}
           autoFocus
         >
@@ -35,4 +35,4 @@ const DialogAlert = ({ open, handleClose, title, content, action }) => {
   );
 };
 
-export default DialogAlert;
+export default AlertDialog;

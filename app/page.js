@@ -1,8 +1,7 @@
 import React from "react";
-import Navigation from "./components/Navigation";
 
 const Dashboard = () => {
-  return <Navigation></Navigation>;
+  return <></>;
 };
 
 export default Dashboard;

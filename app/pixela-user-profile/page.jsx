@@ -10,7 +10,7 @@ const BASE_PIXELA_URL = "https://pixe.la";
 // TODO: FIX CONTEXT API
 
 const UserProfile = () => {
-  const { user, profile } = useContext(UsersContext);
+  const { user, userProfile } = useContext(UsersContext);
 
   const [input, setInput] = useState({
     displayName: "",
@@ -60,15 +60,15 @@ const UserProfile = () => {
   };
 
   useEffect(() => {
-    if (profile) {
+    if (userProfile) {
       setInput({
-        displayName: profile.display_name || "",
-        gravatarIconEmail: profile.gravatar_icon_email || "",
-        title: profile.title || "",
-        timezone: profile.timezone || "",
-        aboutURL: profile.about_url || "",
+        displayName: userProfile.display_name || "",
+        gravatarIconEmail: userProfile.gravatar_icon_email || "",
+        title: userProfile.title || "",
+        timezone: userProfile.timezone || "",
+        aboutURL: userProfile.about_url || "",
         // contributeURLs: profile.contribute_urls || "",
-        pinnedGraphID: profile.pinned_graph_id || "",
+        pinnedGraphID: userProfile.pinned_graph_id || "",
       });
     } else {
       // Set empty defaults if no profile
@@ -82,7 +82,7 @@ const UserProfile = () => {
         pinnedGraphID: "",
       });
     }
-  }, [profile]); // Re-run when profile changes
+  }, [userProfile]); // Re-run when profile changes
 
   return (
     <Navigation>

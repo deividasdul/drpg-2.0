@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CssBaseline } from "@mui/material";
 import { UsersProvider } from "./context/UsersContext";
+import Navigation from "./components/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +27,9 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning
       >
         <CssBaseline />
-        <UsersProvider>{children}</UsersProvider>
+        <UsersProvider>
+          <Navigation>{children}</Navigation>
+        </UsersProvider>
       </body>
     </html>
   );

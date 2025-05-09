@@ -1,23 +1,23 @@
 import { NextResponse } from "next/server";
 import pool from "../db";
-
-const STATUS = {
-  OK: 200,
-  BAD_REQUEST: 400,
-  SERVER_ERROR: 500,
-};
+import STATUS from "@/app/constants/status";
 
 export async function GET() {
   try {
     const response = await pool.query(`SELECT * FROM users`);
-    const users = response.rows;
-    return NextResponse.json(users, { status: STATUS.OK });
+
+    if (response.rows.length > 0) {
+      const user = response.rows[0];
+      return NextResponse.json(user, { status: STATUS.OK });
+    } else {
+      return NextResponse.json(null, { status: STATUS.BAD_REQUEST });
+    }
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { message: "Failed" },
-      { status: STATUS.SERVER_ERROR }
-    );
+    return NextResponse.json({
+      message: "Database error",
+      status: STATUS.SERVER_ERROR,
+    });
   }
 }
 
@@ -26,7 +26,7 @@ export async function POST(req) {
 
   if (!link || !username || !token) {
     return NextResponse.json(
-      { message: "Missing fields" },
+      { message: "All input fields must be filled in" },
       { status: STATUS.BAD_REQUEST }
     );
   }
@@ -37,65 +37,21 @@ export async function POST(req) {
       [link, username, token]
     );
 
-    const userId = result.rows[0].id;
+    const userID = result.rows[0].id;
 
     await pool.query(
-      `INSERT INTO profiles (id, display_name, gravatar_icon_email, title, timezone, about_url, contribute_urls, pinned_graph_id) OVERRIDING SYSTEM VALUE VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [userId, "", "", "", "", "", "", ""]
+      `INSERT INTO profiles (id, display_name, gravatar_icon_email, pinned_graph_id) OVERRIDING SYSTEM VALUE VALUES ($1, $2, $3, $4)`,
+      [userID, "", "", ""]
     );
-    return NextResponse.json({ message: "Success" }, { status: STATUS.OK });
+    return NextResponse.json(
+      { message: "User successfully created" },
+      { status: STATUS.OK }
+    );
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { message: "Failed" },
-      { status: STATUS.SERVER_ERROR }
-    );
-  }
-}
-
-export async function DELETE(req) {
-  const username = await req.json();
-
-  if (!username) {
-    return NextResponse.json(
-      { message: "Missing fields" },
-      { status: STATUS.BAD_REQUEST }
-    );
-  }
-
-  try {
-    await pool.query(`DELETE FROM users WHERE username = ($1)`, [username]);
-    return NextResponse.json({ message: "Success" }, { status: STATUS.OK });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { message: "Failed" },
-      { status: STATUS.SERVER_ERROR }
-    );
-  }
-}
-
-export async function PUT(req) {
-  const { token, username } = await req.json();
-
-  if (!token || !username) {
-    return NextResponse.json(
-      { message: "Missing fields" },
-      { status: STATUS.BAD_REQUEST }
-    );
-  }
-
-  try {
-    await pool.query(`UPDATE users SET token = ($1) WHERE username = ($2)`, [
-      token,
-      username,
-    ]);
-    return NextResponse.json({ message: "Success" }, { status: STATUS.OK });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { message: "Failed" },
-      { status: STATUS.SERVER_ERROR }
-    );
+    return NextResponse.json({
+      message: "Database error",
+      status: STATUS.SERVER_ERROR,
+    });
   }
 }
